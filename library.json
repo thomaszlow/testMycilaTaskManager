@@ -1,0 +1,31 @@
+{
+  "name": "MycilaTaskManager",
+  "version": "1.0.0",
+  "description": "Arduino / ESP32 Task Manager Library",
+  "homepage": "https://github.com/mathieucarbou/MycilaTaskManager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathieucarbou/MycilaTaskManager.git"
+  },
+  "authors": {
+    "name": "Mathieu Carbou",
+    "url": "https://github.com/mathieucarbou"
+  },
+  "license": "MIT",
+  "frameworks": "arduino",
+  "platforms": [
+    "espressif32"
+  ],
+  "headers": "MycilaTaskManager.h",
+  "export": {
+    "include": [
+      "examples",
+      "src",
+      "library.json",
+      "library.properties",
+      "LICENSE",
+      "platformio.ini",
+      "README.md"
+    ]
+  }
+}
