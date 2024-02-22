@@ -140,6 +140,7 @@ void Mycila::TaskManager::_addTask(Task* task) {
       ESP_LOGD(TAG, "Task '%s' added to task manager '%s'", task->getName(), _name);
       return;
     }
+  ESP_LOGE(TAG, "Task '%s' cannot be added to task manager '%s': increase capacity!", task->getName(), _name);
   assert(false); // full
 }
 
