@@ -110,7 +110,8 @@ namespace Mycila {
       size_t getSize() const;
 
       // must be called from main loop and will loop over all registered tasks
-      void loop();
+      // returns the number of executed tasks
+      size_t loop();
 
       // call pause() on all tasks
       void pause();
@@ -132,14 +133,26 @@ namespace Mycila {
       void toJson(const JsonObject& root) const;
 #endif
 
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+      // start the task manager in a separate task.
+      // You can add a delay in microseconds when no task is executed in order to avoid triggering the watchdog
+      bool asyncStart(const uint32_t stackSize = 4096, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
+
+      // kill the async task
+      void asyncStop();
+#endif
+
     private:
       const char* _name;
       const size_t _capacity;
       Task** _tasks = nullptr;
-
-    private:
       void _addTask(Task* task);
       void _removeTask(Task* task);
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+      TaskHandle_t _taskManagerHandle = NULL;
+      uint32_t _delay = 0;
+      static void _asyncTaskManager(void* params);
+#endif
 
     private:
       friend class Task;
@@ -236,7 +249,7 @@ namespace Mycila {
 #ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
       // start the task in a separate task.
       // You can add a delay in microseconds when the task is not executed in order to avoid triggering the watchdog
-      bool asyncStart(const char* taskName, const uint32_t stackSize, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
+      bool asyncStart(const uint32_t stackSize = 4096, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
 
       // kill the async task
       void asyncStop();

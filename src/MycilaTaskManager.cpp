@@ -88,10 +88,15 @@ size_t Mycila::TaskManager::getSize() const {
   return count;
 }
 
-void Mycila::TaskManager::loop() {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i] && _tasks[i]->tryRun())
+size_t Mycila::TaskManager::loop() {
+  size_t executed = 0;
+  for (size_t i = 0; i < _capacity; i++) {
+    if (_tasks[i] && _tasks[i]->tryRun()) {
+      executed++;
       yield();
+    }
+  }
+  return executed;
 }
 
 void Mycila::TaskManager::pause() {
@@ -130,6 +135,39 @@ void Mycila::TaskManager::toJson(const JsonObject& root) const {
   for (size_t i = 0; i < _capacity; i++)
     if (_tasks[i])
       _tasks[i]->toJson(root["tasks"][i].to<JsonObject>());
+}
+#endif
+
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+bool Mycila::TaskManager::asyncStart(const uint32_t stackSize, const UBaseType_t priority, const BaseType_t coreID, uint32_t delay) {
+  if (_taskManagerHandle)
+    return false;
+  _delay = delay;
+  bool b = xTaskCreateUniversal(_asyncTaskManager, _name, stackSize, this, priority, &_taskManagerHandle, coreID) == pdPASS;
+  if (b)
+    ESP_LOGD(TAG, "Started async task manager '%s' with handle: %p", _name, _taskManagerHandle);
+  return b;
+}
+
+void Mycila::TaskManager::asyncStop() {
+  if (!_taskManagerHandle)
+    return;
+  ESP_LOGD(TAG, "Stopping async task manager with handle: %p", _taskManagerHandle);
+  vTaskDelete(_taskManagerHandle);
+  _taskManagerHandle = NULL;
+}
+
+void Mycila::TaskManager::_asyncTaskManager(void* params) {
+  TaskManager* taskManager = reinterpret_cast<TaskManager*>(params);
+  while (true) {
+    if (!taskManager->loop()) {
+      if (taskManager->_delay)
+        delay(taskManager->_delay);
+      else
+        yield();
+    }
+  }
+  vTaskDelete(NULL);
 }
 #endif
 
@@ -331,13 +369,13 @@ void Mycila::Task::toJson(const JsonObject& root) const {
 #endif
 
 #ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
-bool Mycila::Task::asyncStart(const char* taskName, const uint32_t stackSize, const UBaseType_t priority, const BaseType_t coreID, uint32_t delay) {
+bool Mycila::Task::asyncStart(const uint32_t stackSize, const UBaseType_t priority, const BaseType_t coreID, uint32_t delay) {
   if (_taskHandle)
     return false;
   _delay = delay;
-  bool b = xTaskCreateUniversal(_asyncTask, taskName, stackSize, this, priority, &_taskHandle, coreID) == pdPASS;
+  bool b = xTaskCreateUniversal(_asyncTask, _name, stackSize, this, priority, &_taskHandle, coreID) == pdPASS;
   if (b)
-    ESP_LOGD(TAG, "Started async task '%s' with handle: %p", taskName, _taskHandle);
+    ESP_LOGD(TAG, "Started async task '%s' with handle: %p", _name, _taskHandle);
   return b;
 }
 
@@ -350,7 +388,7 @@ void Mycila::Task::asyncStop() {
 }
 
 void Mycila::Task::_asyncTask(void* params) {
-  Task* task = (Task*)params;
+  Task* task = reinterpret_cast<Task*>(params);
   while (true) {
     if (!task->tryRun()) {
       if (task->_delay)

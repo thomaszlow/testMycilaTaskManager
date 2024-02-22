@@ -6,7 +6,7 @@
 
 Arduino / ESP32 Task Manager Library
 
-This is a simple task manager for Arduino / ESP32, to schedule tasks at a given frequency. 
+This is a simple task manager for Arduino / ESP32, to schedule tasks at a given frequency.
 Tasks are represented by anonymous function, so they must be small, non-blocking and cooperative.
 
 - Support dynamic activation of task
@@ -15,8 +15,11 @@ Tasks are represented by anonymous function, so they must be small, non-blocking
 - Callback
 - Debug and statistics to display execution times
 - Pause and Resume a task or a complete set of tasks
+- Async support! Start the loop manager in a background task as easy as calling `.asyncStart()`!
 
 ## Usage
+
+**Please have a look at the API and examples.**
 
 ### Simple task
 
@@ -62,3 +65,17 @@ void loop() {
 ```
 
 Have a look at the API for more!
+
+### Async
+
+Launch an async task with:
+
+```c++
+sayHello.asyncStart();
+```
+
+Launch an async task manager with:
+
+```c++
+loopTaskManager.asyncStart();
+```

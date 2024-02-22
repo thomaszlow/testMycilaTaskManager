@@ -15,7 +15,7 @@ void setup() {
     ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
   });
 
-  sayHello.asyncStart("hello", 2048);
+  sayHello.asyncStart();
 }
 
 void loop() {
