@@ -9,7 +9,6 @@ void setup() {
     continue;
 
   sayHello.setType(Mycila::TaskType::FOREVER);
-  sayHello.setEnabled(true);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);

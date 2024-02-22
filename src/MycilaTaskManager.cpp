@@ -8,8 +8,12 @@
 
 #define TAG "TASK-MAN"
 
-static const Mycila::TaskPredicate ALWAYS_TRUE = []() {
+const Mycila::TaskPredicate Mycila::Task::ALWAYS_TRUE = []() {
   return true;
+};
+
+const Mycila::TaskPredicate Mycila::Task::ALWAYS_FALSE = []() {
+  return false;
 };
 
 ////////////////
@@ -211,12 +215,15 @@ Mycila::Task::~Task() {
 const char* Mycila::Task::getName() const { return _name; }
 Mycila::TaskType Mycila::Task::getType() const { return _type; }
 uint32_t Mycila::Task::getInterval() const { return _intervalSupplier ? _intervalSupplier() : 0; }
-bool Mycila::Task::isEnabled() const { return _enabledPredicate && _enabledPredicate(); }
+bool Mycila::Task::isEnabled() const { return !_enabledPredicate || _enabledPredicate(); }
+bool Mycila::Task::isPaused() const { return _paused; }
 bool Mycila::Task::isRunning() const { return _running; }
 bool Mycila::Task::isManaged() const { return _manager; }
 bool Mycila::Task::isProfiled() const { return _stats; }
 bool Mycila::Task::shouldRun() const {
-  if (!_enabledPredicate || !_enabledPredicate())
+  if (_paused)
+    return false;
+  if (_enabledPredicate && !_enabledPredicate())
     return false;
   if (_lastEnd == 0 || !_intervalSupplier)
     return true;
@@ -228,16 +235,21 @@ bool Mycila::Task::shouldRun() const {
 // task creation
 ///////////////////
 
-void Mycila::Task::setType(Mycila::TaskType type) { _type = type; }
+void Mycila::Task::setType(Mycila::TaskType type) {
+  _type = type;
+  _paused = type == TaskType::ONCE;
+}
 
 void Mycila::Task::setEnabled(bool enabled) {
   if (enabled)
-    _enabledPredicate = ALWAYS_TRUE;
-  else
     _enabledPredicate = nullptr;
+  else
+    _enabledPredicate = ALWAYS_FALSE;
 }
 
-void Mycila::Task::setEnabledWhen(TaskPredicate predicate) { _enabledPredicate = predicate; }
+void Mycila::Task::setEnabledWhen(TaskPredicate predicate) {
+  _enabledPredicate = predicate;
+}
 
 void Mycila::Task::setInterval(uint32_t intervalMicros) {
   if (intervalMicros == 0)
@@ -268,10 +280,12 @@ void Mycila::Task::setManager(TaskManager* manager) {
 ///////////////////
 
 void Mycila::Task::setData(void* params) { _params = params; }
-void Mycila::Task::pause() { _enabledPredicate = nullptr; }
-void Mycila::Task::resume() { _enabledPredicate = ALWAYS_TRUE; }
+void Mycila::Task::pause() { _paused = true; }
+void Mycila::Task::resume() { _paused = false; }
 bool Mycila::Task::tryRun() {
-  if (!_enabledPredicate || !_enabledPredicate())
+  if (_paused)
+    return false;
+  if (_enabledPredicate && !_enabledPredicate())
     return false;
   if (_lastEnd == 0 || !_intervalSupplier) {
     _run(micros());
@@ -361,6 +375,7 @@ const Mycila::TaskStatistics* Mycila::Task::getStatistics() const { return _stat
 void Mycila::Task::toJson(const JsonObject& root) const {
   root["name"] = _name;
   root["type"] = _type == TaskType::ONCE ? "ONCE" : "FOREVER";
+  root["paused"] = _paused;
   root["enabled"] = isEnabled();
   root["interval"] = getInterval();
   if (_stats)
@@ -417,7 +432,7 @@ void Mycila::Task::_run(const uint32_t now) {
   _running = false;
   _lastEnd = micros();
   if (_type == TaskType::ONCE)
-    _enabledPredicate = nullptr;
+    _paused = true;
 
   const uint32_t elapsed = _lastEnd - now;
 

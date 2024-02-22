@@ -174,9 +174,14 @@ namespace Mycila {
       const char* getName() const;
       TaskType getType() const;
       uint32_t getInterval() const;
+      // check if a task is enabled as per the enabled predicate.
+      // by default a task is enabled.
       bool isEnabled() const;
+      // check is the task is temporary paused
+      bool isPaused() const;
       bool isRunning() const;
       bool isEarlyRunRequested() const;
+      // check if the task should run, meaning it is enabled, not paused and the interval has been reached
       bool shouldRun() const;
       bool isManaged() const;
       bool isProfiled() const;
@@ -185,7 +190,10 @@ namespace Mycila {
       // task creation
       ///////////////////
 
-      // change task type. Once will run once and then disable itself. Forever will run at the specified interval
+      // change task type.
+      // ONCE will start paused, run once, and be paused again.
+      // FOREVER will start active and will run at the specified interval.
+      // In both cases the enable predicate will be checked to see of the task is enabled when not paused.
       void setType(TaskType type);
 
       // change the enabled state
@@ -264,6 +272,10 @@ namespace Mycila {
       void setDebugWhen(TaskPredicate predicate);
 #endif
 
+    public:
+      static const Mycila::TaskPredicate ALWAYS_TRUE;
+      static const Mycila::TaskPredicate ALWAYS_FALSE;
+
       ///////////////////
       // private
       ///////////////////
@@ -279,6 +291,7 @@ namespace Mycila {
       TaskIntervalSupplier _intervalSupplier = nullptr;
       TaskDoneCallback _onDone = nullptr;
       bool _running = false;
+      bool _paused = false;
       uint32_t _lastEnd = 0;
       void* _params = nullptr;
 

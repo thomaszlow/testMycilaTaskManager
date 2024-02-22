@@ -24,7 +24,6 @@ void setup() {
 
   sayHello.setType(Mycila::TaskType::FOREVER);
   sayHello.setManager(&loopTaskManager);
-  sayHello.setEnabled(true);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
@@ -32,7 +31,6 @@ void setup() {
 
   sayGoodbye.setType(Mycila::TaskType::FOREVER);
   sayGoodbye.setManager(&loopTaskManager);
-  sayGoodbye.setEnabled(true);
   sayGoodbye.setInterval(3 * Mycila::TaskDuration::SECONDS);
   sayGoodbye.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
@@ -48,7 +46,6 @@ void setup() {
 
   output.setType(Mycila::TaskType::FOREVER);
   output.setManager(&loopTaskManager);
-  output.setEnabled(true);
   output.setInterval(5 * Mycila::TaskDuration::SECONDS);
 
   loopTaskManager.enableProfiling(6, Mycila::TaskTimeUnit::MICROSECONDS);
