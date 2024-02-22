@@ -330,6 +330,39 @@ void Mycila::Task::toJson(const JsonObject& root) const {
 }
 #endif
 
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+bool Mycila::Task::asyncStart(const char* taskName, const uint32_t stackSize, const UBaseType_t priority, const BaseType_t coreID, uint32_t delay) {
+  if (_taskHandle)
+    return false;
+  _delay = delay;
+  bool b = xTaskCreateUniversal(_asyncTask, taskName, stackSize, this, priority, &_taskHandle, coreID) == pdPASS;
+  if (b)
+    ESP_LOGD(TAG, "Started async task '%s' with handle: %p", taskName, _taskHandle);
+  return b;
+}
+
+void Mycila::Task::asyncStop() {
+  if (!_taskHandle)
+    return;
+  ESP_LOGD(TAG, "Stopping async task with handle: %p", _taskHandle);
+  vTaskDelete(_taskHandle);
+  _taskHandle = NULL;
+}
+
+void Mycila::Task::_asyncTask(void* params) {
+  Task* task = (Task*)params;
+  while (true) {
+    if (!task->tryRun()) {
+      if (task->_delay)
+        delay(task->_delay);
+      else
+        yield();
+    }
+  }
+  vTaskDelete(NULL);
+}
+#endif
+
 #ifdef MYCILA_TASK_MANAGER_DEBUG
 bool Mycila::Task::isDebug() const { return _debugPredicate && _debugPredicate(); }
 void Mycila::Task::setDebug(bool debug) { _debugPredicate = debug ? ALWAYS_TRUE : nullptr; }

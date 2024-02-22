@@ -8,6 +8,10 @@
 
 #include <Print.h>
 
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+#include <Arduino.h>
+#endif
+
 #ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
 #include <ArduinoJson.h>
 #endif
@@ -229,6 +233,15 @@ namespace Mycila {
       void toJson(const JsonObject& root) const;
 #endif
 
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+      // start the task in a separate task.
+      // You can add a delay in microseconds when the task is not executed in order to avoid triggering the watchdog
+      bool asyncStart(const char* taskName, const uint32_t stackSize, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
+
+      // kill the async task
+      void asyncStop();
+#endif
+
 #ifdef MYCILA_TASK_MANAGER_DEBUG
       // debug
       bool isDebug() const;
@@ -257,6 +270,12 @@ namespace Mycila {
       void* _params = nullptr;
 
       void _run(const uint32_t now);
+
+#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+      TaskHandle_t _taskHandle = NULL;
+      uint32_t _delay = 0;
+      static void _asyncTask(void* params);
+#endif
 
 #ifdef MYCILA_TASK_MANAGER_DEBUG
       TaskPredicate _debugPredicate = nullptr;
