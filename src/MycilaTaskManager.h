@@ -24,9 +24,9 @@
 namespace Mycila {
   // Note: uint32_t limit to about 1 hour
   namespace TaskDuration {
-    constexpr int64_t MICROSECONDS = 1UL;
-    constexpr int64_t MILLISECONDS = 1000UL;
-    constexpr int64_t SECONDS = 1000000UL;
+    constexpr uint32_t MICROSECONDS = 1UL;
+    constexpr uint32_t MILLISECONDS = 1000UL;
+    constexpr uint32_t SECONDS = 1000000UL;
   } // namespace TaskDuration
 
   enum class TaskTimeUnit {
@@ -47,7 +47,7 @@ namespace Mycila {
   typedef std::function<void(void* params)> TaskFunction;
   typedef std::function<bool()> TaskPredicate;
   typedef std::function<int64_t()> TaskIntervalSupplier;
-  typedef std::function<void(const Task& me, const int64_t elapsed)> TaskDoneCallback;
+  typedef std::function<void(const Task& me, const uint32_t elapsed)> TaskDoneCallback;
 
   ///////////////////
   // TaskStatistics
@@ -69,7 +69,7 @@ namespace Mycila {
       explicit TaskStatistics(const uint8_t nBins = 16, TaskTimeUnit unit = TaskTimeUnit::MILLISECONDS);
       ~TaskStatistics();
 
-      void record(int64_t elapsed);
+      void record(uint32_t elapsed);
       void clear();
 
       // mark the stats object has beeing seen,

@@ -33,7 +33,7 @@ Mycila::TaskStatistics::~TaskStatistics() {
     delete[] _bins;
 }
 
-void Mycila::TaskStatistics::record(int64_t elapsed) {
+void Mycila::TaskStatistics::record(uint32_t elapsed) {
   if (_iterations == UINT32_MAX)
     clear();
   _iterations++;
@@ -41,7 +41,7 @@ void Mycila::TaskStatistics::record(int64_t elapsed) {
   if (!_nBins)
     return;
   uint8_t bin = 0;
-  elapsed = elapsed / (int64_t)_unit;
+  elapsed = elapsed / (uint32_t)_unit;
   while (elapsed >>= 1 && bin < _nBins - 1)
     bin++;
   if (_bins[bin] < UINT16_MAX) {
@@ -446,11 +446,11 @@ void Mycila::Task::_run(const int64_t& now) {
   if (_type == TaskType::ONCE)
     _paused = true;
 
-  const int64_t elapsed = _lastEnd - now;
+  const uint32_t elapsed = _lastEnd - now;
 
 #ifdef MYCILA_TASK_MANAGER_DEBUG
   if (_debugPredicate && _debugPredicate())
-    ESP_LOGD(TAG, "%s ended in %llu us", _name, elapsed);
+    ESP_LOGD(TAG, "%s ended in %u us", _name, elapsed);
 #endif
 
   if (_stats)

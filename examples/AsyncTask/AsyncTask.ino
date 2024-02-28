@@ -10,8 +10,8 @@ void setup() {
 
   sayHello.setType(Mycila::TaskType::FOREVER);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  sayHello.setCallback([](const Mycila::Task& me, const int64_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %llu ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+  sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
+    ESP_LOGD("app", "Task '%s' executed in %u ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
   });
 
   sayHello.asyncStart();

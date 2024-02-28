@@ -51,7 +51,7 @@ void setup() {
   sayHello.setType(Mycila::TaskType::FOREVER); // this is the default
   sayHello.setManager(&loopTaskManager);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  sayHello.setCallback([](const Mycila::Task& me, const int64_t elapsed) { sayGoodbye.resume(); });
+  sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) { sayGoodbye.resume(); });
 
   sayGoodbye.setType(Mycila::TaskType::ONCE);
   sayGoodbye.setManager(&loopTaskManager);
