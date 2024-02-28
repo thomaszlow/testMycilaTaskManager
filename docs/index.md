@@ -28,7 +28,6 @@ Mycila::Task sayHello("sayHello", [](void* params) { Serial.println("Hello"); })
 
 void setup() {
   sayHello.setType(Mycila::TaskType::FOREVER); // this is the default
-  sayHello.setEnabled(true);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
@@ -51,9 +50,8 @@ Mycila::Task sayGoodbye("sayGoodbye", [](void* params) { Serial.println("Hello")
 void setup() {
   sayHello.setType(Mycila::TaskType::FOREVER); // this is the default
   sayHello.setManager(&loopTaskManager);
-  sayHello.setEnabled(true);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) { sayGoodbye.resume(); });
+  sayHello.setCallback([](const Mycila::Task& me, const int64_t elapsed) { sayGoodbye.resume(); });
 
   sayGoodbye.setType(Mycila::TaskType::ONCE);
   sayGoodbye.setManager(&loopTaskManager);
