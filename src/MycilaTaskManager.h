@@ -16,17 +16,17 @@
 #include <ArduinoJson.h>
 #endif
 
-#define MYCILA_TASK_MANAGER_VERSION "1.2.0"
-#define MYCILA_TASK_MANAGER_VERSION_MAJOR 1
-#define MYCILA_TASK_MANAGER_VERSION_MINOR 2
+#define MYCILA_TASK_MANAGER_VERSION          "1.2.0"
+#define MYCILA_TASK_MANAGER_VERSION_MAJOR    1
+#define MYCILA_TASK_MANAGER_VERSION_MINOR    2
 #define MYCILA_TASK_MANAGER_VERSION_REVISION 0
 
 namespace Mycila {
   // Note: uint32_t limit to about 1 hour
   namespace TaskDuration {
-    constexpr uint32_t MICROSECONDS = 1UL;
-    constexpr uint32_t MILLISECONDS = 1000UL;
-    constexpr uint32_t SECONDS = 1000000UL;
+    constexpr int64_t MICROSECONDS = 1UL;
+    constexpr int64_t MILLISECONDS = 1000UL;
+    constexpr int64_t SECONDS = 1000000UL;
   } // namespace TaskDuration
 
   enum class TaskTimeUnit {
@@ -46,8 +46,8 @@ namespace Mycila {
 
   typedef std::function<void(void* params)> TaskFunction;
   typedef std::function<bool()> TaskPredicate;
-  typedef std::function<uint32_t()> TaskIntervalSupplier;
-  typedef std::function<void(const Task& me, const uint32_t elapsed)> TaskDoneCallback;
+  typedef std::function<int64_t()> TaskIntervalSupplier;
+  typedef std::function<void(const Task& me, const int64_t elapsed)> TaskDoneCallback;
 
   ///////////////////
   // TaskStatistics
@@ -69,7 +69,7 @@ namespace Mycila {
       explicit TaskStatistics(const uint8_t nBins = 16, TaskTimeUnit unit = TaskTimeUnit::MILLISECONDS);
       ~TaskStatistics();
 
-      void record(uint32_t elapsed);
+      void record(int64_t elapsed);
       void clear();
 
       // mark the stats object has beeing seen,
@@ -173,9 +173,10 @@ namespace Mycila {
 
       const char* getName() const;
       TaskType getType() const;
-      uint32_t getInterval() const;
-      // check if a task is enabled as per the enabled predicate.
-      // by default a task is enabled.
+      int64_t getInterval() const;
+      // get remaining time before next run
+      int64_t getRemainingTme() const;
+      // check if a task is enabled as per the enabled predicate. By default a task is enabled.
       bool isEnabled() const;
       // check is the task is temporary paused
       bool isPaused() const;
@@ -203,7 +204,7 @@ namespace Mycila {
       void setEnabledWhen(TaskPredicate predicate);
 
       // change the interval of execution
-      void setInterval(uint32_t intervalMicros);
+      void setInterval(int64_t intervalMicros);
 
       // dynamically provide the interval
       void setIntervalSupplier(TaskIntervalSupplier supplier);
@@ -292,10 +293,10 @@ namespace Mycila {
       TaskDoneCallback _onDone = nullptr;
       bool _running = false;
       bool _paused = false;
-      uint32_t _lastEnd = 0;
+      int64_t _lastEnd = 0;
       void* _params = nullptr;
 
-      void _run(const uint32_t now);
+      void _run(const int64_t& now);
 
 #ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
       TaskHandle_t _taskHandle = NULL;

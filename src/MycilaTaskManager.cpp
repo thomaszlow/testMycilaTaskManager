@@ -8,6 +8,8 @@
 
 #define TAG "TASK-MAN"
 
+#define NOW() esp_timer_get_time()
+
 const Mycila::TaskPredicate Mycila::Task::ALWAYS_TRUE = []() {
   return true;
 };
@@ -31,7 +33,7 @@ Mycila::TaskStatistics::~TaskStatistics() {
     delete[] _bins;
 }
 
-void Mycila::TaskStatistics::record(uint32_t elapsed) {
+void Mycila::TaskStatistics::record(int64_t elapsed) {
   if (_iterations == UINT32_MAX)
     clear();
   _iterations++;
@@ -39,7 +41,7 @@ void Mycila::TaskStatistics::record(uint32_t elapsed) {
   if (!_nBins)
     return;
   uint8_t bin = 0;
-  elapsed = elapsed / (uint32_t)_unit;
+  elapsed = elapsed / (int64_t)_unit;
   while (elapsed >>= 1 && bin < _nBins - 1)
     bin++;
   if (_bins[bin] < UINT16_MAX) {
@@ -214,12 +216,22 @@ Mycila::Task::~Task() {
 
 const char* Mycila::Task::getName() const { return _name; }
 Mycila::TaskType Mycila::Task::getType() const { return _type; }
-uint32_t Mycila::Task::getInterval() const { return _intervalSupplier ? _intervalSupplier() : 0; }
+int64_t Mycila::Task::getInterval() const { return _intervalSupplier ? _intervalSupplier() : 0; }
 bool Mycila::Task::isEnabled() const { return !_enabledPredicate || _enabledPredicate(); }
 bool Mycila::Task::isPaused() const { return _paused; }
 bool Mycila::Task::isRunning() const { return _running; }
 bool Mycila::Task::isManaged() const { return _manager; }
 bool Mycila::Task::isProfiled() const { return _stats; }
+int64_t Mycila::Task::getRemainingTme() const {
+  if (!_intervalSupplier)
+    return 0;
+  const int64_t itvl = _intervalSupplier();
+  if (itvl == 0)
+    return 0;
+  const int64_t next = _lastEnd + itvl;
+  const int64_t now = NOW();
+  return next > now ? next - now : 0;
+}
 bool Mycila::Task::shouldRun() const {
   if (_paused)
     return false;
@@ -228,7 +240,7 @@ bool Mycila::Task::shouldRun() const {
   if (_lastEnd == 0 || !_intervalSupplier)
     return true;
   const uint32_t itvl = _intervalSupplier();
-  return itvl == 0 || micros() - _lastEnd >= itvl;
+  return itvl == 0 || NOW() - _lastEnd >= itvl;
 }
 
 ///////////////////
@@ -251,7 +263,7 @@ void Mycila::Task::setEnabledWhen(TaskPredicate predicate) {
   _enabledPredicate = predicate;
 }
 
-void Mycila::Task::setInterval(uint32_t intervalMicros) {
+void Mycila::Task::setInterval(int64_t intervalMicros) {
   if (intervalMicros == 0)
     _intervalSupplier = nullptr;
   else
@@ -288,18 +300,18 @@ bool Mycila::Task::tryRun() {
   if (_enabledPredicate && !_enabledPredicate())
     return false;
   if (_lastEnd == 0 || !_intervalSupplier) {
-    _run(micros());
+    _run(NOW());
     return true;
   }
-  const uint32_t itvl = _intervalSupplier();
-  const uint32_t now = micros();
+  const int64_t itvl = _intervalSupplier();
+  const int64_t now = NOW();
   if (itvl == 0 || now - _lastEnd >= itvl) {
     _run(now);
     return true;
   }
   return false;
 }
-void Mycila::Task::forceRun() { _run(micros()); }
+void Mycila::Task::forceRun() { _run(NOW()); }
 void Mycila::Task::requestEarlyRun() { _lastEnd = 0; }
 
 ///////////////////
@@ -426,19 +438,19 @@ void Mycila::Task::setDebugWhen(TaskPredicate predicate) { _debugPredicate = pre
 // private
 ///////////////////
 
-void Mycila::Task::_run(const uint32_t now) {
+void Mycila::Task::_run(const int64_t& now) {
   _running = true;
   _fn(_params);
   _running = false;
-  _lastEnd = micros();
+  _lastEnd = esp_timer_get_time();
   if (_type == TaskType::ONCE)
     _paused = true;
 
-  const uint32_t elapsed = _lastEnd - now;
+  const int64_t elapsed = _lastEnd - now;
 
 #ifdef MYCILA_TASK_MANAGER_DEBUG
   if (_debugPredicate && _debugPredicate())
-    ESP_LOGD(TAG, "%s ended in %u us", _name, elapsed);
+    ESP_LOGD(TAG, "%s ended in %llu us", _name, elapsed);
 #endif
 
   if (_stats)

@@ -26,14 +26,14 @@ void setup() {
   sayHello.setManager(&loopTaskManager);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+    ESP_LOGD("app", "Task '%s' executed in %llu ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
   });
 
   sayGoodbye.setType(Mycila::TaskType::FOREVER);
   sayGoodbye.setManager(&loopTaskManager);
   sayGoodbye.setInterval(3 * Mycila::TaskDuration::SECONDS);
   sayGoodbye.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+    ESP_LOGD("app", "Task '%s' executed in %llu ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
     ping.setData(params);
     ping.resume();
   });
@@ -41,7 +41,7 @@ void setup() {
   ping.setType(Mycila::TaskType::ONCE);
   ping.setManager(&loopTaskManager);
   ping.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %d ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+    ESP_LOGD("app", "Task '%s' executed in %llu ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
   });
 
   output.setType(Mycila::TaskType::FOREVER);
