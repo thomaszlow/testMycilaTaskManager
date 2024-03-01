@@ -222,6 +222,7 @@ bool Mycila::Task::isPaused() const { return _paused; }
 bool Mycila::Task::isRunning() const { return _running; }
 bool Mycila::Task::isManaged() const { return _manager; }
 bool Mycila::Task::isProfiled() const { return _stats; }
+bool Mycila::Task::isEarlyRunRequested() const { return _lastEnd == 0; }
 int64_t Mycila::Task::getRemainingTme() const {
   if (!_intervalSupplier)
     return 0;
