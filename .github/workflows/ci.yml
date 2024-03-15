@@ -92,8 +92,10 @@ jobs:
         include:
           - platform: espressif32
             board: esp32dev
-            eeprom: true
-            softwareserial: false
+            opts:
+          - platform: espressif32
+            board: esp32dev
+            opts: "--project-option 'platform_packages=platformio/framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.0-alpha3, platform_packages=platformio/framework-arduinoespressif32-libs @ https://github.com/espressif/esp32-arduino-libs.git#idf-release/v5.1'"
 
     steps:
       - name: Checkout
@@ -119,13 +121,13 @@ jobs:
         run: platformio platform install ${{ matrix.platform }}
 
       - name: TaskManager
-        run: platformio ci "examples/TaskManager/TaskManager.ino" -l '.' -b ${{ matrix.board }}
+        run: platformio ci "examples/TaskManager/TaskManager.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: TaskManagerJson
-        run:  PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_JSON_SUPPORT" platformio ci "examples/TaskManagerJson/TaskManagerJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }}
+        run:  PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_JSON_SUPPORT" platformio ci "examples/TaskManagerJson/TaskManagerJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: AsyncTask
-        run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_ASYNC_SUPPORT" platformio ci "examples/AsyncTask/AsyncTask.ino" -l '.' -b ${{ matrix.board }}
+        run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_ASYNC_SUPPORT" platformio ci "examples/AsyncTask/AsyncTask.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: AsyncTaskManager
-        run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_ASYNC_SUPPORT" platformio ci "examples/AsyncTaskManager/AsyncTaskManager.ino" -l '.' -b ${{ matrix.board }}
+        run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_ASYNC_SUPPORT" platformio ci "examples/AsyncTaskManager/AsyncTaskManager.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
