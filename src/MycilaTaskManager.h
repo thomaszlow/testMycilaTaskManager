@@ -22,11 +22,10 @@
 #define MYCILA_TASK_MANAGER_VERSION_REVISION 3
 
 namespace Mycila {
-  // Note: uint32_t limit to about 1 hour
   namespace TaskDuration {
-    constexpr uint32_t MICROSECONDS = 1UL;
-    constexpr uint32_t MILLISECONDS = 1000UL;
-    constexpr uint32_t SECONDS = 1000000UL;
+    constexpr int64_t MICROSECONDS = 1UL;
+    constexpr int64_t MILLISECONDS = 1000UL;
+    constexpr int64_t SECONDS = 1000000UL;
   } // namespace TaskDuration
 
   enum class TaskTimeUnit {
