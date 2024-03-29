@@ -26,6 +26,8 @@ namespace Mycila {
     constexpr int64_t MICROSECONDS = 1UL;
     constexpr int64_t MILLISECONDS = 1000UL;
     constexpr int64_t SECONDS = 1000000UL;
+    constexpr int64_t MINUTES = 60 * SECONDS;
+    constexpr int64_t HOURS = 60 * MINUTES;
   } // namespace TaskDuration
 
   enum class TaskTimeUnit {
