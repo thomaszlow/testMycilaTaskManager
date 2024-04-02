@@ -31,9 +31,9 @@ namespace Mycila {
   } // namespace TaskDuration
 
   enum class TaskTimeUnit {
-    MICROSECONDS = TaskDuration::MICROSECONDS,
-    MILLISECONDS = TaskDuration::MILLISECONDS,
-    SECONDS = TaskDuration::SECONDS,
+    MICROSECONDS = (uint32_t)TaskDuration::MICROSECONDS,
+    MILLISECONDS = (uint32_t)TaskDuration::MILLISECONDS,
+    SECONDS = (uint32_t)TaskDuration::SECONDS,
   };
 
   enum class TaskType {
