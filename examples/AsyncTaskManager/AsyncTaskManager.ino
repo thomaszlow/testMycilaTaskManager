@@ -19,7 +19,7 @@ void setup() {
   sayHello.setManager(&loopTaskManager);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %u ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+    ESP_LOGD("app", "Task '%s' executed in %u us", me.getName(), elapsed);
   });
 
   // Requires -D MYCILA_TASK_MANAGER_DEBUG
@@ -29,7 +29,7 @@ void setup() {
   sayGoodbye.setManager(&loopTaskManager);
   sayGoodbye.setInterval(3 * Mycila::TaskDuration::SECONDS);
   sayGoodbye.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %u ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+    ESP_LOGD("app", "Task '%s' executed in %u us", me.getName(), elapsed);
     ping.setData(params);
     ping.resume();
   });
@@ -38,7 +38,7 @@ void setup() {
   ping.setType(Mycila::TaskType::ONCE);
   ping.setManager(&loopTaskManager);
   ping.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %u ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+    ESP_LOGD("app", "Task '%s' executed in %u us", me.getName(), elapsed);
   });
   // ping.setDebug(true);
 
