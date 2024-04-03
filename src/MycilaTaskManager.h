@@ -227,7 +227,7 @@ namespace Mycila {
       void pause();
 
       // resume a paused task
-      void resume();
+      void resume(int64_t delayMicros = 0);
 
       // try to run the task if it should run
       bool tryRun();

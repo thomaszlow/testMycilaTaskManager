@@ -294,7 +294,13 @@ void Mycila::Task::setManager(TaskManager* manager) {
 
 void Mycila::Task::setData(void* params) { _params = params; }
 void Mycila::Task::pause() { _paused = true; }
-void Mycila::Task::resume() { _paused = false; }
+void Mycila::Task::resume(int64_t delayMicros) {
+  if (delayMicros) {
+    setInterval(delayMicros);
+    _lastEnd = esp_timer_get_time();
+  }
+  _paused = false;
+}
 bool Mycila::Task::tryRun() {
   if (_paused)
     return false;

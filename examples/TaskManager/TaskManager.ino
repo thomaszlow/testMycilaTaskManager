@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <MycilaTaskManager.h>
 
-Mycila::TaskManager loopTaskManager("loop()", 4);
+Mycila::TaskManager loopTaskManager("loop()", 5);
 
 Mycila::Task sayHello("sayHello", [](void* params) { Serial.println("Hello"); });
 Mycila::Task sayGoodbye("sayGoodbye", [](void* params) { Serial.println("Hello"); });
 Mycila::Task ping("ping", [](void* params) { Serial.println((const char*)params); });
 Mycila::Task output("output", [](void* params) { loopTaskManager.log(10); });
+Mycila::Task delayed("delayed", [](void* params) { Serial.println("Delayed!"); });
 
 char* params = "Pong";
 
@@ -21,7 +22,7 @@ void setup() {
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %d us", me.getName(), elapsed);
   });
-  
+
   // Requires -D MYCILA_TASK_MANAGER_DEBUG
   // sayHello.setDebug(true);
 
@@ -46,7 +47,12 @@ void setup() {
   output.setManager(&loopTaskManager);
   output.setInterval(5 * Mycila::TaskDuration::SECONDS);
 
+  delayed.setType(Mycila::TaskType::ONCE);
+  delayed.setManager(&loopTaskManager);
+
   loopTaskManager.enableProfiling(6, Mycila::TaskTimeUnit::MICROSECONDS);
+
+  delayed.resume(10 * Mycila::TaskDuration::SECONDS);
 }
 
 void loop() {
