@@ -30,7 +30,7 @@ void setup() {
   sayHello.setType(Mycila::TaskType::FOREVER); // this is the default
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
-    ESP_LOGD("app", "Task '%s' executed in %d us", me.getName(), elapsed);
+    ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.getName(), elapsed);
   });
 }
 

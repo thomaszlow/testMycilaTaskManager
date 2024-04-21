@@ -457,7 +457,7 @@ void Mycila::Task::_run(const int64_t& now) {
 
 #ifdef MYCILA_TASK_MANAGER_DEBUG
   if (_debugPredicate && _debugPredicate())
-    ESP_LOGD(TAG, "%s ended in %u us", _name, elapsed);
+    ESP_LOGD(TAG, "%s ended in %" PRIu32 " us", _name, elapsed);
 #endif
 
   if (_stats)
