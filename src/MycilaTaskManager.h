@@ -214,7 +214,7 @@ namespace Mycila {
       void setCallback(TaskDoneCallback doneCallback);
 
       // have this task managed by a task manager
-      void setManager(TaskManager* manager);
+      void setManager(TaskManager& manager); // NOLINT
 
       ///////////////////
       // task management
@@ -245,7 +245,7 @@ namespace Mycila {
       bool enableProfiling(const uint8_t nBins = 10, TaskTimeUnit unit = TaskTimeUnit::MILLISECONDS);
       bool disableProfiling();
       void log(const size_t maxNameWidth = 30);
-      const TaskStatistics* getStatistics() const;
+      const TaskStatistics& getStatistics() const;
 
       ///////////////////
       // optional

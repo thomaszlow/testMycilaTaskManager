@@ -49,12 +49,12 @@ Mycila::Task sayGoodbye("sayGoodbye", [](void* params) { Serial.println("Hello")
 
 void setup() {
   sayHello.setType(Mycila::TaskType::FOREVER); // this is the default
-  sayHello.setManager(&loopTaskManager);
+  sayHello.setManager(loopTaskManager);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) { sayGoodbye.resume(); });
 
   sayGoodbye.setType(Mycila::TaskType::ONCE);
-  sayGoodbye.setManager(&loopTaskManager);
+  sayGoodbye.setManager(loopTaskManager);
 }
 
 void loop() {

@@ -23,14 +23,14 @@ void setup() {
     continue;
 
   sayHello.setType(Mycila::TaskType::FOREVER);
-  sayHello.setManager(&loopTaskManager);
+  sayHello.setManager(loopTaskManager);
   sayHello.setInterval(1 * Mycila::TaskDuration::SECONDS);
   sayHello.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.getName(), elapsed);
   });
 
   sayGoodbye.setType(Mycila::TaskType::FOREVER);
-  sayGoodbye.setManager(&loopTaskManager);
+  sayGoodbye.setManager(loopTaskManager);
   sayGoodbye.setInterval(3 * Mycila::TaskDuration::SECONDS);
   sayGoodbye.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.getName(), elapsed);
@@ -39,13 +39,13 @@ void setup() {
   });
 
   ping.setType(Mycila::TaskType::ONCE);
-  ping.setManager(&loopTaskManager);
+  ping.setManager(loopTaskManager);
   ping.setCallback([](const Mycila::Task& me, const uint32_t elapsed) {
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.getName(), elapsed);
   });
 
   output.setType(Mycila::TaskType::FOREVER);
-  output.setManager(&loopTaskManager);
+  output.setManager(loopTaskManager);
   output.setInterval(5 * Mycila::TaskDuration::SECONDS);
 
   loopTaskManager.enableProfiling(6, Mycila::TaskTimeUnit::MICROSECONDS);

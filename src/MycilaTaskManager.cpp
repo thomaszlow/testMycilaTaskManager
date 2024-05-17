@@ -277,15 +277,10 @@ void Mycila::Task::setIntervalSupplier(TaskIntervalSupplier supplier) { _interva
 
 void Mycila::Task::setCallback(TaskDoneCallback doneCallback) { _onDone = doneCallback; }
 
-void Mycila::Task::setManager(TaskManager* manager) {
-  if (manager == _manager)
-    return;
-  // cannot replace a manager
-  if (manager)
-    assert(!_manager);
-  _manager = manager;
-  if (_manager)
-    _manager->_addTask(this);
+void Mycila::Task::setManager(TaskManager& manager) {
+  assert(!_manager);
+  _manager = &manager;
+  _manager->_addTask(this);
 }
 
 ///////////////////
@@ -384,7 +379,7 @@ void Mycila::Task::log(const size_t maxNameWidth) {
   _stats->processed();
 }
 
-const Mycila::TaskStatistics* Mycila::Task::getStatistics() const { return _stats; }
+const Mycila::TaskStatistics& Mycila::Task::getStatistics() const { return *_stats; }
 
 ///////////////////
 // optional
