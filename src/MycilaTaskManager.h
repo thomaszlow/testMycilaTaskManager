@@ -4,13 +4,10 @@
  */
 #pragma once
 
-#include <functional>
-
+#include <Arduino.h>
 #include <Print.h>
 
-#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
-#include <Arduino.h>
-#endif
+#include <functional>
 
 #ifdef MYCILA_JSON_SUPPORT
 #include <ArduinoJson.h>
@@ -134,14 +131,12 @@ namespace Mycila {
       void toJson(const JsonObject& root) const;
 #endif
 
-#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
       // start the task manager in a separate task.
       // You can add a delay in microseconds when no task is executed in order to avoid triggering the watchdog
       bool asyncStart(const uint32_t stackSize = 4096, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
 
       // kill the async task
       void asyncStop();
-#endif
 
     private:
       const char* _name;
@@ -149,11 +144,10 @@ namespace Mycila {
       Task** _tasks = nullptr;
       void _addTask(Task* task);
       void _removeTask(Task* task);
-#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
+      // async
       TaskHandle_t _taskManagerHandle = NULL;
       uint32_t _delay = 0;
       static void _asyncTaskManager(void* params);
-#endif
 
     private:
       friend class Task;
@@ -298,12 +292,6 @@ namespace Mycila {
       void* _params = nullptr;
 
       void _run(const int64_t& now);
-
-#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
-      TaskHandle_t _taskHandle = NULL;
-      uint32_t _delay = 0;
-      static void _asyncTask(void* params);
-#endif
 
 #ifdef MYCILA_TASK_MANAGER_DEBUG
       TaskPredicate _debugPredicate = nullptr;
