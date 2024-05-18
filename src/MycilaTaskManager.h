@@ -124,7 +124,7 @@ namespace Mycila {
       void disableProfiling();
 
       // log all tasks
-      void log(const size_t maxNameWidth = 30);
+      void log();
 
       // json output of the task manager
 #ifdef MYCILA_JSON_SUPPORT
@@ -238,7 +238,7 @@ namespace Mycila {
 
       bool enableProfiling(const uint8_t nBins = 10, TaskTimeUnit unit = TaskTimeUnit::MILLISECONDS);
       bool disableProfiling();
-      void log(const size_t maxNameWidth = 30);
+      void log();
       const TaskStatistics& getStatistics() const;
 
       ///////////////////

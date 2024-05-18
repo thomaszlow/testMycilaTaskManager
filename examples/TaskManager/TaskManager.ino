@@ -6,7 +6,7 @@ Mycila::TaskManager loopTaskManager("loop()", 5);
 Mycila::Task sayHello("sayHello", [](void* params) { Serial.println("Hello"); });
 Mycila::Task sayGoodbye("sayGoodbye", [](void* params) { Serial.println("Hello"); });
 Mycila::Task ping("ping", [](void* params) { Serial.println((const char*)params); });
-Mycila::Task output("output", [](void* params) { loopTaskManager.log(10); });
+Mycila::Task output("output", [](void* params) { loopTaskManager.log(); });
 Mycila::Task delayed("delayed", [](void* params) { Serial.println("Delayed!"); });
 
 char* params = "Pong";

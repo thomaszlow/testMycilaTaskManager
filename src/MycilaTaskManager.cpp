@@ -143,10 +143,10 @@ void Mycila::TaskManager::disableProfiling() {
       _tasks[i]->disableProfiling();
 }
 
-void Mycila::TaskManager::log(const size_t maxNameWidth) {
+void Mycila::TaskManager::log() {
   for (size_t i = 0; i < _capacity; i++)
     if (_tasks[i])
-      _tasks[i]->log(maxNameWidth);
+      _tasks[i]->log();
 }
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -193,7 +193,7 @@ void Mycila::TaskManager::_addTask(Task* task) {
   for (size_t i = 0; i < _capacity; i++)
     if (!_tasks[i]) {
       _tasks[i] = task;
-      LOGD(TAG, "Task '%s' added to task manager '%s'", task->getName(), _name);
+      LOGD(TAG, "Task '%s' => '%s'", task->getName(), _name);
       return;
     }
   LOGE(TAG, "Task '%s' cannot be added to task manager '%s': increase capacity!", task->getName(), _name);
@@ -336,7 +336,7 @@ bool Mycila::Task::enableProfiling(const uint8_t nBins, TaskTimeUnit unit) {
   if (_stats)
     return false;
   _stats = new TaskStatistics(nBins, unit);
-  LOGD(TAG, "Enabled profiling on task '%s'", _name);
+  LOGD(TAG, "Profiling task '%s'", _name);
   return true;
 }
 
@@ -350,42 +350,30 @@ bool Mycila::Task::disableProfiling() {
   return false;
 }
 
-void Mycila::Task::log(const size_t maxNameWidth) {
+void Mycila::Task::log() {
   if (!_stats)
     return;
   if (!_stats->isUpdated())
     return;
-  int c;
   String line;
   line.reserve(256);
   line += "| ";
-  c = strlen(_name);
-  if (c == maxNameWidth)
-    line += _name;
-  else if (c > maxNameWidth)
-    line += String(_name).substring(0, maxNameWidth);
-  else {
-    line += _name;
-    while (c++ < maxNameWidth)
-      line += " ";
-  }
+  line += _name;
   const uint8_t nBins = _stats->getBinCount();
   if (nBins) {
+    line += " (";
+    line += _stats->getIterations();
+    line += ")";
     const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
     for (uint8_t i = 0; i < nBins; i++) {
-      const String val = String(_stats->getBin(i));
       line += " | ";
-      c = 5 - val.length();
-      while (c-- > 0)
-        line += " ";
-      line += val;
+      line += _stats->getBin(i);
       line += i < nBins - 1 ? " < 2^" : " >= 2^";
       line += i < nBins - 1 ? (i + 1) : i;
       line += " ";
       line += unit;
     }
-    line += " | count: ";
-    line += _stats->getIterations();
+    line += " |";
   }
   LOGD(TAG, "%s", line.c_str());
   _stats->processed();

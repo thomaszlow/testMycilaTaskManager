@@ -12,7 +12,7 @@ Mycila::Task output("output", [](void* params) {
   loopTaskManager.toJson(doc.to<JsonObject>());
   serializeJson(doc, Serial);
   Serial.println();
-  loopTaskManager.log(10);
+  loopTaskManager.log();
 });
 
 char* params = "Pong";
