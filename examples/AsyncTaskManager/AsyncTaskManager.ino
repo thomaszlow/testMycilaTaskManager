@@ -22,9 +22,6 @@ void setup() {
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.getName(), elapsed);
   });
 
-  // Requires -D MYCILA_TASK_MANAGER_DEBUG
-  // sayHello.setDebug(true);
-
   sayGoodbye.setType(Mycila::TaskType::FOREVER);
   sayGoodbye.setManager(loopTaskManager);
   sayGoodbye.setInterval(3 * Mycila::TaskDuration::SECONDS);

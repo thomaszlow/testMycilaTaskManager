@@ -395,12 +395,6 @@ void Mycila::Task::toJson(const JsonObject& root) const {
 }
 #endif
 
-#ifdef MYCILA_TASK_MANAGER_DEBUG
-bool Mycila::Task::isDebug() const { return _debugPredicate && _debugPredicate(); }
-void Mycila::Task::setDebug(bool debug) { _debugPredicate = debug ? ALWAYS_TRUE : nullptr; }
-void Mycila::Task::setDebugWhen(TaskPredicate predicate) { _debugPredicate = predicate; }
-#endif
-
 ///////////////////
 // private
 ///////////////////
@@ -414,11 +408,6 @@ void Mycila::Task::_run(const int64_t& now) {
     _paused = true;
 
   const uint32_t elapsed = _lastEnd - now;
-
-#ifdef MYCILA_TASK_MANAGER_DEBUG
-  if (_debugPredicate && _debugPredicate())
-    ESP_LOGD(TAG, "%s ended in %" PRIu32 " us", _name, elapsed);
-#endif
 
   if (_stats)
     _stats->record(elapsed);

@@ -259,15 +259,6 @@ namespace Mycila {
       void asyncStop();
 #endif
 
-#ifdef MYCILA_TASK_MANAGER_DEBUG
-      // debug
-      bool isDebug() const;
-      // activate some debug features, like output the task elapsed time at the end
-      void setDebug(bool debug);
-      // activate some debug features, like output the task elapsed time at the end if the predicate returns true
-      void setDebugWhen(TaskPredicate predicate);
-#endif
-
     public:
       static const Mycila::TaskPredicate ALWAYS_TRUE;
       static const Mycila::TaskPredicate ALWAYS_FALSE;
@@ -292,9 +283,5 @@ namespace Mycila {
       void* _params = nullptr;
 
       void _run(const int64_t& now);
-
-#ifdef MYCILA_TASK_MANAGER_DEBUG
-      TaskPredicate _debugPredicate = nullptr;
-#endif
   };
 } // namespace Mycila
