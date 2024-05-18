@@ -6,7 +6,21 @@
 
 #include <Arduino.h>
 
-#define TAG "TASK-MAN"
+#ifdef MYCILA_LOGGER_SUPPORT
+#include <MycilaLogger.h>
+extern Mycila::Logger logger;
+#define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
+#define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
+#define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
+#define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
+#else
+#define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
+#define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
+#define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
+#define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
+#endif
+
+#define TAG "TASKS"
 
 #define NOW() esp_timer_get_time()
 
@@ -150,14 +164,14 @@ bool Mycila::TaskManager::asyncStart(const uint32_t stackSize, const UBaseType_t
   _delay = delay;
   bool b = xTaskCreateUniversal(_asyncTaskManager, _name, stackSize, this, priority, &_taskManagerHandle, coreID) == pdPASS;
   if (b)
-    ESP_LOGD(TAG, "Started async task manager '%s' with handle: %p", _name, _taskManagerHandle);
+    LOGD(TAG, "Started async task manager '%s' with handle: %p", _name, _taskManagerHandle);
   return b;
 }
 
 void Mycila::TaskManager::asyncStop() {
   if (!_taskManagerHandle)
     return;
-  ESP_LOGD(TAG, "Stopping async task manager with handle: %p", _taskManagerHandle);
+  LOGD(TAG, "Stopping async task manager with handle: %p", _taskManagerHandle);
   vTaskDelete(_taskManagerHandle);
   _taskManagerHandle = NULL;
 }
@@ -179,10 +193,10 @@ void Mycila::TaskManager::_addTask(Task* task) {
   for (size_t i = 0; i < _capacity; i++)
     if (!_tasks[i]) {
       _tasks[i] = task;
-      ESP_LOGD(TAG, "Task '%s' added to task manager '%s'", task->getName(), _name);
+      LOGD(TAG, "Task '%s' added to task manager '%s'", task->getName(), _name);
       return;
     }
-  ESP_LOGE(TAG, "Task '%s' cannot be added to task manager '%s': increase capacity!", task->getName(), _name);
+  LOGE(TAG, "Task '%s' cannot be added to task manager '%s': increase capacity!", task->getName(), _name);
   assert(false); // full
 }
 
@@ -190,7 +204,7 @@ void Mycila::TaskManager::_removeTask(Task* task) {
   for (size_t i = 0; i < _capacity; i++)
     if (_tasks[i] == task) {
       _tasks[i] = nullptr;
-      ESP_LOGD(TAG, "Task '%s' removed from task manager '%s'", task->getName(), _name);
+      LOGD(TAG, "Task '%s' removed from task manager '%s'", task->getName(), _name);
       return;
     }
 }
@@ -322,7 +336,7 @@ bool Mycila::Task::enableProfiling(const uint8_t nBins, TaskTimeUnit unit) {
   if (_stats)
     return false;
   _stats = new TaskStatistics(nBins, unit);
-  ESP_LOGD(TAG, "Enabled profiling on task '%s'", _name);
+  LOGD(TAG, "Enabled profiling on task '%s'", _name);
   return true;
 }
 
@@ -330,7 +344,7 @@ bool Mycila::Task::disableProfiling() {
   if (_stats) {
     delete _stats;
     _stats = nullptr;
-    ESP_LOGD(TAG, "Disabled profiling on task '%s'", _name);
+    LOGD(TAG, "Disabled profiling on task '%s'", _name);
     return true;
   }
   return false;
@@ -373,7 +387,7 @@ void Mycila::Task::log(const size_t maxNameWidth) {
     line += " | count: ";
     line += _stats->getIterations();
   }
-  ESP_LOGD(TAG, "%s", line.c_str());
+  LOGD(TAG, "%s", line.c_str());
   _stats->processed();
 }
 
