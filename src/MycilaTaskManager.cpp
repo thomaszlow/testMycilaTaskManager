@@ -57,7 +57,7 @@ void Mycila::TaskStatistics::clear() {
 
 void Mycila::TaskStatistics::processed() { _updated = false; }
 
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
 void Mycila::TaskStatistics::toJson(const JsonObject& root) const {
   root["count"] = _iterations;
   root["unit"] = _unit == TaskTimeUnit::MICROSECONDS ? "us" : (_unit == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
@@ -135,7 +135,7 @@ void Mycila::TaskManager::log(const size_t maxNameWidth) {
       _tasks[i]->log(maxNameWidth);
 }
 
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
 void Mycila::TaskManager::toJson(const JsonObject& root) const {
   root["name"] = _name;
   for (size_t i = 0; i < _capacity; i++)
@@ -385,7 +385,7 @@ const Mycila::TaskStatistics& Mycila::Task::getStatistics() const { return *_sta
 // optional
 ///////////////////
 
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
 void Mycila::Task::toJson(const JsonObject& root) const {
   root["name"] = _name;
   root["type"] = _type == TaskType::ONCE ? "ONCE" : "FOREVER";

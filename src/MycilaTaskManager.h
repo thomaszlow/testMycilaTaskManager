@@ -12,7 +12,7 @@
 #include <Arduino.h>
 #endif
 
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
 #include <ArduinoJson.h>
 #endif
 
@@ -77,7 +77,7 @@ namespace Mycila {
       // and next calls to isUpdated() will return false until new data is recorded
       void processed();
 
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
       // json output
       void toJson(const JsonObject& root) const;
 #endif
@@ -130,7 +130,7 @@ namespace Mycila {
       void log(const size_t maxNameWidth = 30);
 
       // json output of the task manager
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;
 #endif
 
@@ -251,7 +251,7 @@ namespace Mycila {
       // optional
       ///////////////////
 
-#ifdef MYCILA_TASK_MANAGER_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
       // json output
       void toJson(const JsonObject& root) const;
 #endif

@@ -75,7 +75,7 @@ jobs:
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TaskManager/TaskManager.ino"
 
       - name: Build TaskManagerJson
-        run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TaskManagerJson/TaskManagerJson.ino" --build-property build.extra_flags=-DMYCILA_TASK_MANAGER_JSON_SUPPORT
+        run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TaskManagerJson/TaskManagerJson.ino" --build-property build.extra_flags=-DMYCILA_JSON_SUPPORT
 
       - name: Build AsyncTask
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/AsyncTask/AsyncTask.ino" --build-property build.extra_flags=-DMYCILA_TASK_MANAGER_ASYNC_SUPPORT
@@ -143,7 +143,7 @@ jobs:
         run: platformio ci "examples/TaskManager/TaskManager.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: TaskManagerJson
-        run:  PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_JSON_SUPPORT" platformio ci "examples/TaskManagerJson/TaskManagerJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}
+        run:  PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_JSON_SUPPORT" platformio ci "examples/TaskManagerJson/TaskManagerJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: AsyncTask
         run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra -DMYCILA_TASK_MANAGER_ASYNC_SUPPORT" platformio ci "examples/AsyncTask/AsyncTask.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
