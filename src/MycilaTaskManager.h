@@ -14,10 +14,10 @@
 #include <ArduinoJson.h>
 #endif
 
-#define MYCILA_TASK_MANAGER_VERSION          "3.0.5"
+#define MYCILA_TASK_MANAGER_VERSION          "3.0.6"
 #define MYCILA_TASK_MANAGER_VERSION_MAJOR    3
 #define MYCILA_TASK_MANAGER_VERSION_MINOR    0
-#define MYCILA_TASK_MANAGER_VERSION_REVISION 5
+#define MYCILA_TASK_MANAGER_VERSION_REVISION 6
 
 namespace Mycila {
   namespace TaskDuration {
@@ -160,7 +160,7 @@ namespace Mycila {
   class Task {
     public:
       Task(const char* name, TaskFunction fn);
-      Task(const char* name, TaskManager& manager, TaskFunction fn, TaskType type = Mycila::TaskType::FOREVER); // NOLINT
+      Task(const char* name, TaskFunction fn, TaskType type = Mycila::TaskType::FOREVER); // NOLINT
       ~Task();
 
       ///////////////////
