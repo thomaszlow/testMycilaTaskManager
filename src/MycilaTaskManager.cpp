@@ -90,71 +90,55 @@ bool Mycila::TaskStatistics::isUpdated() const { return _updated; }
 // TASK MANAGER
 ////////////////
 
-Mycila::TaskManager::TaskManager(const char* name, const size_t maxTaskCount) : _name(name),
-                                                                                _capacity(maxTaskCount),
-                                                                                _tasks(new Task*[maxTaskCount]) {
-  for (size_t i = 0; i < _capacity; i++)
-    _tasks[i] = nullptr;
+Mycila::TaskManager::TaskManager(const char* name, const size_t taskCount) : _name(name) {
+  if (taskCount < _tasks.capacity())
+    _tasks.reserve(taskCount);
 }
-Mycila::TaskManager::~TaskManager() { delete[] _tasks; }
+Mycila::TaskManager::~TaskManager() { _tasks.clear(); }
 
 const char* Mycila::TaskManager::getName() const { return _name; }
-
-size_t Mycila::TaskManager::getSize() const {
-  size_t count = 0;
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      count++;
-  return count;
-}
+size_t Mycila::TaskManager::getSize() const { return _tasks.size(); }
 
 size_t Mycila::TaskManager::loop() {
   size_t executed = 0;
-  for (size_t i = 0; i < _capacity; i++) {
-    if (_tasks[i] && _tasks[i]->tryRun()) {
+  for (auto& task : _tasks)
+    if (task->tryRun()) {
       executed++;
       yield();
     }
-  }
   return executed;
 }
 
 void Mycila::TaskManager::pause() {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      _tasks[i]->pause();
+  for (auto& task : _tasks)
+    task->pause();
 }
 
 void Mycila::TaskManager::resume() {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      _tasks[i]->resume();
+  for (auto& task : _tasks)
+    task->resume();
 }
 
 void Mycila::TaskManager::enableProfiling(const uint8_t nBins, TaskTimeUnit unit) {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      _tasks[i]->enableProfiling(nBins, unit);
+  for (auto& task : _tasks)
+    task->enableProfiling(nBins, unit);
 }
 
 void Mycila::TaskManager::disableProfiling() {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      _tasks[i]->disableProfiling();
+  for (auto& task : _tasks)
+    task->disableProfiling();
 }
 
 void Mycila::TaskManager::log() {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      _tasks[i]->log();
+  for (auto& task : _tasks)
+    task->log();
 }
 
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::TaskManager::toJson(const JsonObject& root) const {
   root["name"] = _name;
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i])
-      _tasks[i]->toJson(root["tasks"][i].to<JsonObject>());
+  for (auto& task : _tasks)
+    task->toJson(root["tasks"].createNestedObject());
 }
 #endif
 
@@ -190,23 +174,15 @@ void Mycila::TaskManager::_asyncTaskManager(void* params) {
 }
 
 void Mycila::TaskManager::_addTask(Task* task) {
-  for (size_t i = 0; i < _capacity; i++)
-    if (!_tasks[i]) {
-      _tasks[i] = task;
-      LOGD(TAG, "Task '%s' => '%s'", task->getName(), _name);
-      return;
-    }
-  LOGE(TAG, "Task '%s' cannot be added to task manager '%s': increase capacity!", task->getName(), _name);
-  assert(false); // full
+  _tasks.reserve(_tasks.size() + 1);
+  _tasks.push_back(task);
+  LOGD(TAG, "Task '%s' => '%s'", task->getName(), _name);
 }
 
 void Mycila::TaskManager::_removeTask(Task* task) {
-  for (size_t i = 0; i < _capacity; i++)
-    if (_tasks[i] == task) {
-      _tasks[i] = nullptr;
-      LOGD(TAG, "Task '%s' removed from task manager '%s'", task->getName(), _name);
-      return;
-    }
+  // remove task from vector
+  _tasks.erase(std::remove(_tasks.begin(), _tasks.end(), task), _tasks.end());
+  LOGD(TAG, "Task '%s' removed from task manager '%s'", task->getName(), _name);
 }
 
 ////////////////

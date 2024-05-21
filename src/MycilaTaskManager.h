@@ -8,6 +8,7 @@
 #include <Print.h>
 
 #include <functional>
+#include <vector>
 
 #ifdef MYCILA_JSON_SUPPORT
 #include <ArduinoJson.h>
@@ -99,7 +100,7 @@ namespace Mycila {
 
   class TaskManager {
     public:
-      explicit TaskManager(const char* name, const size_t maxTaskCount);
+      explicit TaskManager(const char* name, const size_t taskCount = 0);
       ~TaskManager();
 
       const char* getName() const;
@@ -140,8 +141,7 @@ namespace Mycila {
 
     private:
       const char* _name;
-      const size_t _capacity;
-      Task** _tasks = nullptr;
+      std::vector<Task*> _tasks;
       void _addTask(Task* task);
       void _removeTask(Task* task);
       // async
