@@ -138,7 +138,7 @@ void Mycila::TaskManager::log() {
 void Mycila::TaskManager::toJson(const JsonObject& root) const {
   root["name"] = _name;
   for (auto& task : _tasks)
-    task->toJson(root["tasks"].createNestedObject());
+    task->toJson(root["tasks"].add<JsonObject>());
 }
 #endif
 
