@@ -375,7 +375,7 @@ void Mycila::Task::log() {
     }
     line += " |";
   }
-  LOGD(TAG, "%s", line.c_str());
+  LOGI(TAG, "%s", line.c_str());
   _stats->processed();
 }
 
