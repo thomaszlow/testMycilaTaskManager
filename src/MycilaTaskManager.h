@@ -160,6 +160,7 @@ namespace Mycila {
   class Task {
     public:
       Task(const char* name, TaskFunction fn);
+      Task(const char* name, TaskManager& manager, TaskFunction fn, TaskType type = Mycila::TaskType::FOREVER); // NOLINT
       ~Task();
 
       ///////////////////
