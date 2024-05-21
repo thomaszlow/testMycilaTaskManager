@@ -190,7 +190,7 @@ void Mycila::TaskManager::_removeTask(Task* task) {
 ////////////////
 
 Mycila::Task::Task(const char* name, TaskFunction fn) : _name(name), _fn(fn) { assert(_fn); }
-Mycila::Task::Task(const char* name, TaskFunction fn, TaskType type) : _name(name), _fn(fn) {
+Mycila::Task::Task(const char* name, TaskType type, TaskFunction fn) : _name(name), _fn(fn) {
   assert(_fn);
   setType(type);
 }

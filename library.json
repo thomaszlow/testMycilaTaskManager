@@ -1,6 +1,6 @@
 {
   "name": "MycilaTaskManager",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Arduino / ESP32 Task Manager Library",
   "homepage": "https://github.com/mathieucarbou/MycilaTaskManager",
   "repository": {
