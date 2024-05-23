@@ -217,6 +217,7 @@ namespace Mycila {
 
       // pass some data to the task
       void setData(void* params);
+      void* getData() const;
 
       // pause a task
       void pause();

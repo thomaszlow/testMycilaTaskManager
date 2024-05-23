@@ -280,6 +280,7 @@ void Mycila::Task::setManager(TaskManager& manager) {
 ///////////////////
 
 void Mycila::Task::setData(void* params) { _params = params; }
+void* Mycila::Task::getData() const { return _params; }
 void Mycila::Task::pause() { _paused = true; }
 void Mycila::Task::resume(int64_t delayMicros) {
   if (delayMicros) {
