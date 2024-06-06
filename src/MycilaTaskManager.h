@@ -11,13 +11,29 @@
 #include <vector>
 
 #ifdef MYCILA_JSON_SUPPORT
-#include <ArduinoJson.h>
+  #include <ArduinoJson.h>
 #endif
 
 #define MYCILA_TASK_MANAGER_VERSION          "3.0.8"
 #define MYCILA_TASK_MANAGER_VERSION_MAJOR    3
 #define MYCILA_TASK_MANAGER_VERSION_MINOR    0
 #define MYCILA_TASK_MANAGER_VERSION_REVISION 8
+
+#ifndef MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE
+  #define MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE 4096
+#endif
+
+#ifndef MYCILA_TASK_MANAGER_ASYNC_PRIORITY
+  #define MYCILA_TASK_MANAGER_ASYNC_PRIORITY 0
+#endif
+
+#ifndef MYCILA_TASK_MANAGER_ASYNC_CORE
+  #define MYCILA_TASK_MANAGER_ASYNC_CORE -1
+#endif
+
+#ifndef MYCILA_TASK_MANAGER_ASYNC_DELAY
+  #define MYCILA_TASK_MANAGER_ASYNC_DELAY 10
+#endif
 
 namespace Mycila {
   namespace TaskDuration {
@@ -65,7 +81,7 @@ namespace Mycila {
       // bin 15 : 2^15 <= elapsed (exception for upper bound)
       // The unit determines the unit of the elapsed time recorded in the bins.
       // It allows to be more precise depending on the expected task execution durations.
-      explicit TaskStatistics(const uint8_t nBins = 16, TaskTimeUnit unit = TaskTimeUnit::MILLISECONDS);
+      explicit TaskStatistics(const uint8_t nBins, TaskTimeUnit unit);
       ~TaskStatistics();
 
       void record(uint32_t elapsed);
@@ -108,8 +124,9 @@ namespace Mycila {
       // number of tasks
       size_t getSize() const;
 
-      // must be called from main loop and will loop over all registered tasks
-      // returns the number of executed tasks
+      // Must be called from main loop and will loop over all registered tasks.
+      // When using async mode, do not call loop: the async task will call it.
+      // Returns the number of executed tasks
       size_t loop();
 
       // call pause() on all tasks
@@ -132,18 +149,32 @@ namespace Mycila {
       void toJson(const JsonObject& root) const;
 #endif
 
-      // start the task manager in a separate task.
-      // You can add a delay in microseconds when no task is executed in order to avoid triggering the watchdog
-      bool asyncStart(const uint32_t stackSize = 4096, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
+      // Start the task manager in a separate task.
+      // - You can add a delay in milliseconds when no task is executed
+      // - You can also enable the global Watchdog Timer (WDT) for this task manager
+      // - If core ID is not set (-1), then the task will run on the same core as the caller
+      // - If priority is not set (-1), then the task will run with the same priority as the caller
+      bool asyncStart(uint32_t stackSize = MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE,
+                      BaseType_t priority = MYCILA_TASK_MANAGER_ASYNC_PRIORITY,
+                      BaseType_t coreID = MYCILA_TASK_MANAGER_ASYNC_CORE,
+                      uint32_t delay = MYCILA_TASK_MANAGER_ASYNC_DELAY,
+                      bool wdt = false);
 
       // kill the async task
       void asyncStop();
+
+      // Initialize the global Task Watchdog Timer (TWDT)
+      // Ref: https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/system/wdts.html
+      // Returns true if the WDT was configured or reconfigured successfully
+      static bool configureWDT(uint32_t timeoutSeconds = CONFIG_ESP_TASK_WDT_TIMEOUT_S, bool panic = true);
 
     private:
       const char* _name;
       std::vector<Task*> _tasks;
       void _addTask(Task* task);
       void _removeTask(Task* task);
+      // WDT
+      bool _wdt = false;
       // async
       TaskHandle_t _taskManagerHandle = NULL;
       uint32_t _delay = 0;
@@ -250,15 +281,6 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       // json output
       void toJson(const JsonObject& root) const;
-#endif
-
-#ifdef MYCILA_TASK_MANAGER_ASYNC_SUPPORT
-      // start the task in a separate task.
-      // You can add a delay in microseconds when the task is not executed in order to avoid triggering the watchdog
-      bool asyncStart(const uint32_t stackSize = 4096, const UBaseType_t priority = 0, const BaseType_t coreID = 0, uint32_t delay = 10);
-
-      // kill the async task
-      void asyncStop();
 #endif
 
     public:

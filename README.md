@@ -16,6 +16,7 @@ Tasks are represented by anonymous function, so they must be small, non-blocking
 - Debug and statistics to display execution times
 - Pause and Resume a task or a complete set of tasks
 - Async support! Start the loop manager in a background task as easy as calling `.asyncStart()`!
+- Watchdog Timer Support (Task  WTD)
 
 ## Usage
 
@@ -76,4 +77,14 @@ Launch an async task manager with:
 
 ```c++
 loopTaskManager.asyncStart();
+```
+
+### Watchdog Timer Support (Task  WTD)
+
+```c++
+Mycila::TaskManager::configureWDT(); // Default Arduino settings
+Mycila::TaskManager::configureWDT(5, false); // no panic restart
+
+// start an async task manager with WDT (true at the end)
+taskManager1.asyncStart(MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE, MYCILA_TASK_MANAGER_ASYNC_PRIORITY, MYCILA_TASK_MANAGER_ASYNC_CORE, MYCILA_TASK_MANAGER_ASYNC_DELAY, true);
 ```

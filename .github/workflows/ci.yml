@@ -80,6 +80,9 @@ jobs:
       - name: Build AsyncTaskManager
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/AsyncTaskManager/AsyncTaskManager.ino"
 
+      - name: Build Watchdog
+        run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/Watchdog/Watchdog.ino"
+
   platformio:
     name: pio ${{ matrix.name }}
     needs: cpplint
@@ -137,3 +140,6 @@ jobs:
 
       - name: AsyncTaskManager
         run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra" platformio ci "examples/AsyncTaskManager/AsyncTaskManager.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
+
+      - name: Watchdog
+        run: PLATFORMIO_BUILD_FLAGS="-Wall -Wextra" platformio ci "examples/Watchdog/Watchdog.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
