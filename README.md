@@ -86,5 +86,5 @@ Mycila::TaskManager::configureWDT(); // Default Arduino settings
 Mycila::TaskManager::configureWDT(5, false); // no panic restart
 
 // start an async task manager with WDT (true at the end)
-taskManager1.asyncStart(MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE, MYCILA_TASK_MANAGER_ASYNC_PRIORITY, MYCILA_TASK_MANAGER_ASYNC_CORE, MYCILA_TASK_MANAGER_ASYNC_DELAY, true);
+taskManager1.asyncStart(4096, -1, -1, 10, true);
 ```

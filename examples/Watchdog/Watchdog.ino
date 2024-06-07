@@ -29,7 +29,7 @@ void setup() {
 
   Mycila::TaskManager::configureWDT(5, false);
 
-  taskManager1.asyncStart(MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE, MYCILA_TASK_MANAGER_ASYNC_PRIORITY, MYCILA_TASK_MANAGER_ASYNC_CORE, MYCILA_TASK_MANAGER_ASYNC_DELAY, true);
+  taskManager1.asyncStart(4096, -1, -1, 10, true);
 }
 
 void loop() {

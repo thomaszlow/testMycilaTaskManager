@@ -19,22 +19,6 @@
 #define MYCILA_TASK_MANAGER_VERSION_MINOR    1
 #define MYCILA_TASK_MANAGER_VERSION_REVISION 0
 
-#ifndef MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE
-  #define MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE 4096
-#endif
-
-#ifndef MYCILA_TASK_MANAGER_ASYNC_PRIORITY
-  #define MYCILA_TASK_MANAGER_ASYNC_PRIORITY 0
-#endif
-
-#ifndef MYCILA_TASK_MANAGER_ASYNC_CORE
-  #define MYCILA_TASK_MANAGER_ASYNC_CORE -1
-#endif
-
-#ifndef MYCILA_TASK_MANAGER_ASYNC_DELAY
-  #define MYCILA_TASK_MANAGER_ASYNC_DELAY 10
-#endif
-
 namespace Mycila {
   namespace TaskDuration {
     constexpr int64_t MICROSECONDS = 1UL;
@@ -154,10 +138,10 @@ namespace Mycila {
       // - You can also enable the global Watchdog Timer (WDT) for this task manager
       // - If core ID is not set (-1), then the task will run on the same core as the caller
       // - If priority is not set (-1), then the task will run with the same priority as the caller
-      bool asyncStart(uint32_t stackSize = MYCILA_TASK_MANAGER_ASYNC_STACK_SIZE,
-                      BaseType_t priority = MYCILA_TASK_MANAGER_ASYNC_PRIORITY,
-                      BaseType_t coreID = MYCILA_TASK_MANAGER_ASYNC_CORE,
-                      uint32_t delay = MYCILA_TASK_MANAGER_ASYNC_DELAY,
+      bool asyncStart(uint32_t stackSize = 4096,
+                      BaseType_t priority = -1,
+                      BaseType_t coreID = -1,
+                      uint32_t delay = 10,
                       bool wdt = false);
 
       // kill the async task
