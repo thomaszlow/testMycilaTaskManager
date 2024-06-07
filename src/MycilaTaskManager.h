@@ -14,10 +14,10 @@
   #include <ArduinoJson.h>
 #endif
 
-#define MYCILA_TASK_MANAGER_VERSION          "3.1.0"
+#define MYCILA_TASK_MANAGER_VERSION          "3.1.1"
 #define MYCILA_TASK_MANAGER_VERSION_MAJOR    3
 #define MYCILA_TASK_MANAGER_VERSION_MINOR    1
-#define MYCILA_TASK_MANAGER_VERSION_REVISION 0
+#define MYCILA_TASK_MANAGER_VERSION_REVISION 1
 
 namespace Mycila {
   namespace TaskDuration {
