@@ -368,23 +368,23 @@ void Mycila::Task::log() {
     return;
   String line;
   line.reserve(256);
-  line += "| ";
-  line += _name;
+  line.concat("| ");
+  line.concat(_name);
   const uint8_t nBins = _stats->getBinCount();
   if (nBins) {
-    line += " (";
-    line += _stats->getIterations();
-    line += ")";
+    line.concat(" (");
+    line.concat(_stats->getIterations());
+    line.concat(")");
     const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
     for (uint8_t i = 0; i < nBins; i++) {
-      line += " | ";
-      line += _stats->getBin(i);
-      line += i < nBins - 1 ? " < 2^" : " >= 2^";
-      line += i < nBins - 1 ? (i + 1) : i;
-      line += " ";
-      line += unit;
+      line.concat(" | ");
+      line.concat(_stats->getBin(i));
+      line.concat(i < nBins - 1 ? " < 2^" : " >= 2^");
+      line.concat(i < nBins - 1 ? (i + 1) : i);
+      line.concat(" ");
+      line.concat(unit);
     }
-    line += " |";
+    line.concat(" |");
   }
   LOGI(TAG, "%s", line.c_str());
   _stats->processed();
