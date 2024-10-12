@@ -56,7 +56,7 @@ void Mycila::TaskStatistics::record(uint32_t elapsed) {
   if (!_nBins)
     return;
   uint8_t bin = 0;
-  elapsed = elapsed / (uint32_t)_unit;
+  elapsed = elapsed / static_cast<uint32_t>(_unit);
   while (elapsed >>= 1 && bin < _nBins - 1)
     bin++;
   if (_bins[bin] < UINT16_MAX) {
