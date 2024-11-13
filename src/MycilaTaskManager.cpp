@@ -4,8 +4,10 @@
  */
 #include <MycilaTaskManager.h>
 
-#include <Arduino.h>
+#include <esp32-hal-log.h>
+#include <esp32-hal.h>
 #include <esp_task_wdt.h>
+#include <esp_timer.h>
 
 #include <string>
 
@@ -370,23 +372,23 @@ void Mycila::Task::log() {
     return;
   std::string line;
   line.reserve(256);
-  line.append("| ");
-  line.append(_name);
+  line += "| ";
+  line += _name;
   const uint8_t nBins = _stats->getBinCount();
   if (nBins) {
-    line.append(" (");
-    line.append(std::to_string(_stats->getIterations()));
-    line.append(")");
+    line += " (";
+    line += std::to_string(_stats->getIterations());
+    line = " )";
     const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
     for (uint8_t i = 0; i < nBins; i++) {
-      line.append(" | ");
-      line.append(std::to_string(_stats->getBin(i)));
-      line.append(i < nBins - 1 ? " < 2^" : " >= 2^");
-      line.append(std::to_string(i < nBins - 1 ? (i + 1) : i));
-      line.append(" ");
-      line.append(unit);
+      line += " | ";
+      line += std::to_string(_stats->getBin(i));
+      line += (i < nBins - 1 ? " < 2^" : " >= 2^");
+      line += std::to_string(i < nBins - 1 ? (i + 1) : i);
+      line += " ";
+      line += unit;
     }
-    line.append(" |");
+    line += " |";
   }
   LOGI(TAG, "%s", line.c_str());
   _stats->processed();

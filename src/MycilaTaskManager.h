@@ -4,15 +4,17 @@
  */
 #pragma once
 
-#include <Arduino.h>
 #include <Print.h>
 
-#include <functional>
-#include <vector>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
 #endif
+
+#include <functional>
+#include <vector>
 
 #define MYCILA_TASK_MANAGER_VERSION          "3.1.2"
 #define MYCILA_TASK_MANAGER_VERSION_MAJOR    3
