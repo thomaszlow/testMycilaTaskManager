@@ -7,6 +7,8 @@
 #include <Arduino.h>
 #include <esp_task_wdt.h>
 
+#include <string>
+
 #ifdef MYCILA_LOGGER_SUPPORT
   #include <MycilaLogger.h>
 extern Mycila::Logger logger;
@@ -366,25 +368,25 @@ void Mycila::Task::log() {
     return;
   if (!_stats->isUpdated())
     return;
-  String line;
+  std::string line;
   line.reserve(256);
-  line.concat("| ");
-  line.concat(_name);
+  line.append("| ");
+  line.append(_name);
   const uint8_t nBins = _stats->getBinCount();
   if (nBins) {
-    line.concat(" (");
-    line.concat(_stats->getIterations());
-    line.concat(")");
+    line.append(" (");
+    line.append(std::to_string(_stats->getIterations()));
+    line.append(")");
     const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
     for (uint8_t i = 0; i < nBins; i++) {
-      line.concat(" | ");
-      line.concat(_stats->getBin(i));
-      line.concat(i < nBins - 1 ? " < 2^" : " >= 2^");
-      line.concat(i < nBins - 1 ? (i + 1) : i);
-      line.concat(" ");
-      line.concat(unit);
+      line.append(" | ");
+      line.append(std::to_string(_stats->getBin(i)));
+      line.append(i < nBins - 1 ? " < 2^" : " >= 2^");
+      line.append(std::to_string(i < nBins - 1 ? (i + 1) : i));
+      line.append(" ");
+      line.append(unit);
     }
-    line.concat(" |");
+    line.append(" |");
   }
   LOGI(TAG, "%s", line.c_str());
   _stats->processed();
