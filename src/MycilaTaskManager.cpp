@@ -378,7 +378,7 @@ void Mycila::Task::log() {
   if (nBins) {
     line += " (";
     line += std::to_string(_stats->getIterations());
-    line = " )";
+    line += " )";
     const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
     for (uint8_t i = 0; i < nBins; i++) {
       line += " | ";
