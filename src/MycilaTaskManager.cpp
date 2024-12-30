@@ -56,7 +56,6 @@ void Mycila::TaskStatistics::record(uint32_t elapsed) {
   if (_iterations == UINT32_MAX)
     clear();
   _iterations++;
-  _updated = true;
   if (!_nBins)
     return;
   uint8_t bin = 0;
@@ -74,8 +73,6 @@ void Mycila::TaskStatistics::clear() {
     _bins[i] = 0;
 }
 
-void Mycila::TaskStatistics::processed() { _updated = false; }
-
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::TaskStatistics::toJson(const JsonObject& root) const {
   root["count"] = _iterations;
@@ -89,7 +86,6 @@ uint8_t Mycila::TaskStatistics::getBinCount() const { return _nBins; }
 Mycila::TaskTimeUnit Mycila::TaskStatistics::getUnit() const { return _unit; }
 uint32_t Mycila::TaskStatistics::getIterations() const { return _iterations; }
 uint16_t Mycila::TaskStatistics::getBin(uint8_t index) const { return _bins[index]; }
-bool Mycila::TaskStatistics::isUpdated() const { return _updated; }
 
 ////////////////
 // TASK MANAGER
@@ -368,8 +364,6 @@ bool Mycila::Task::disableProfiling() {
 void Mycila::Task::log() {
   if (!_stats)
     return;
-  if (!_stats->isUpdated())
-    return;
   std::string line;
   line.reserve(256);
   line += "| ";
@@ -391,7 +385,6 @@ void Mycila::Task::log() {
     line += " |";
   }
   LOGI(TAG, "%s", line.c_str());
-  _stats->processed();
 }
 
 const Mycila::TaskStatistics& Mycila::Task::getStatistics() const { return *_stats; }

@@ -73,10 +73,6 @@ namespace Mycila {
       void record(uint32_t elapsed);
       void clear();
 
-      // mark the stats object has beeing seen,
-      // and next calls to isUpdated() will return false until new data is recorded
-      void processed();
-
 #ifdef MYCILA_JSON_SUPPORT
       // json output
       void toJson(const JsonObject& root) const;
@@ -86,14 +82,12 @@ namespace Mycila {
       TaskTimeUnit getUnit() const;
       uint32_t getIterations() const;
       uint16_t getBin(uint8_t index) const;
-      bool isUpdated() const;
 
     private:
       const uint8_t _nBins;
       const TaskTimeUnit _unit;
       uint16_t* _bins;
       uint32_t _iterations = 0;
-      bool _updated = false;
   };
 
   ///////////////////
