@@ -16,10 +16,10 @@
 #include <functional>
 #include <vector>
 
-#define MYCILA_TASK_MANAGER_VERSION          "3.2.0"
+#define MYCILA_TASK_MANAGER_VERSION          "3.2.1"
 #define MYCILA_TASK_MANAGER_VERSION_MAJOR    3
 #define MYCILA_TASK_MANAGER_VERSION_MINOR    2
-#define MYCILA_TASK_MANAGER_VERSION_REVISION 0
+#define MYCILA_TASK_MANAGER_VERSION_REVISION 1
 
 namespace Mycila {
   namespace TaskDuration {
