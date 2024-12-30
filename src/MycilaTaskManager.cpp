@@ -364,27 +364,25 @@ bool Mycila::Task::disableProfiling() {
 void Mycila::Task::log() {
   if (!_stats)
     return;
-  std::string line;
-  line.reserve(256);
-  line += "| ";
-  line += _name;
+
   const uint8_t nBins = _stats->getBinCount();
-  if (nBins) {
-    line += " (";
-    line += std::to_string(_stats->getIterations());
-    line += ")";
-    const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
-    for (uint8_t i = 0; i < nBins; i++) {
-      line += " | ";
-      line += std::to_string(_stats->getBin(i));
-      line += (i < nBins - 1 ? " < 2^" : " >= 2^");
-      line += std::to_string(i < nBins - 1 ? (i + 1) : i);
-      line += " ";
-      line += unit;
-    }
-    line += " |";
+  if (!nBins)
+    return;
+
+  std::string line;
+  line.reserve(192);
+  const char* unit = _stats->getUnit() == TaskTimeUnit::MICROSECONDS ? "us" : (_stats->getUnit() == TaskTimeUnit::MILLISECONDS ? "ms" : "s");
+  for (uint8_t i = 0; i < nBins; i++) {
+    line += " | ";
+    line += std::to_string(_stats->getBin(i));
+    line += (i < nBins - 1 ? " < 2^" : " >= 2^");
+    line += std::to_string(i < nBins - 1 ? (i + 1) : i);
+    line += " ";
+    line += unit;
   }
-  LOGI(TAG, "%s", line.c_str());
+  line += " |";
+
+  LOGI(TAG, "| %30s%s count=%" PRIu32, _name, line.c_str(), _stats->getIterations());
 }
 
 const Mycila::TaskStatistics& Mycila::Task::getStatistics() const { return *_stats; }
