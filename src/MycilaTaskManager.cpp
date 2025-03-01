@@ -29,8 +29,9 @@ static bool PREDICATE_FALSE() { return false; };
 
 void Mycila::TaskManager::log() {
   if (_stats) {
-    uint8_t binCount = _stats->bins();
-    if (binCount) {
+    const uint8_t binCount = _stats->bins();
+    const uint32_t count = _stats->count();
+    if (binCount && count) {
       std::string line;
       line.reserve(192);
       for (uint8_t i = 0; i < binCount; i++) {
@@ -40,7 +41,7 @@ void Mycila::TaskManager::log() {
         line += std::to_string(i < binCount - 1 ? (i + 1) : i);
       }
       line += " |";
-      LOGI(TAG, "| %30s%s count=%" PRIu32, _name, line.c_str(), _stats->count());
+      LOGI(TAG, "| %30s%s count=%" PRIu32, _name, line.c_str(), count);
     }
   }
   for (auto& task : _tasks)
@@ -110,8 +111,10 @@ Mycila::Task& Mycila::Task::log() {
   if (!_stats)
     return *this;
 
-  uint8_t binCount = _stats->bins();
-  if (!binCount)
+  const uint8_t binCount = _stats->bins();
+  const uint32_t count = _stats->count();
+
+  if (!binCount || !count)
     return *this;
 
   std::string line;
@@ -123,6 +126,6 @@ Mycila::Task& Mycila::Task::log() {
     line += std::to_string(i < binCount - 1 ? (i + 1) : i);
   }
   line += " |";
-  LOGI(TAG, "| %30s%s count=%" PRIu32, _name, line.c_str(), _stats->count());
+  LOGI(TAG, "| %30s%s count=%" PRIu32, _name, line.c_str(), count);
   return *this;
 }

@@ -184,7 +184,7 @@ namespace Mycila {
         root["paused"] = _paused;
         root["enabled"] = enabled();
         root["interval"] = _intervalMs;
-        if (_stats)
+        if (_stats && _stats->bins() && _stats->count())
           _stats->toJson(root["stats"].to<JsonObject>());
       }
 #endif
@@ -315,7 +315,7 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         root["name"] = _name;
-        if (_stats)
+        if (_stats && _stats->bins() && _stats->count())
           _stats->toJson(root["stats"].to<JsonObject>());
         for (auto& task : _tasks)
           task->toJson(root["tasks"].add<JsonObject>());
