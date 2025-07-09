@@ -70,25 +70,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - env: ci-arduino-2
-            board: esp32dev
-          - env: ci-arduino-2
-            board: esp32-s2-saola-1
-          - env: ci-arduino-2
-            board: esp32-s3-devkitc-1
-          - env: ci-arduino-2
-            board: esp32-c3-devkitc-02
+          #- env: ci-arduino-2
+          #  board: esp32dev
+          #- env: ci-arduino-2
+          #  board: esp32-s2-saola-1
+          #- env: ci-arduino-2
+          #  board: esp32-s3-devkitc-1
+          #- env: ci-arduino-2
+          #  board: esp32-c3-devkitc-02
 
-          - env: ci-arduino-3
-            board: esp32dev
-          - env: ci-arduino-3
-            board: esp32-s2-saola-1
-          - env: ci-arduino-3
-            board: esp32-s3-devkitc-1
-          - env: ci-arduino-3
-            board: esp32-c3-devkitc-02
-          - env: ci-arduino-3
-            board: esp32-c6-devkitc-1
+          #- env: ci-arduino-3
+          #  board: esp32dev
+          #- env: ci-arduino-3
+          #  board: esp32-s2-saola-1
+          #- env: ci-arduino-3
+          #  board: esp32-s3-devkitc-1
+          #- env: ci-arduino-3
+          #  board: esp32-c3-devkitc-02
+          #- env: ci-arduino-3
+          #  board: esp32-c6-devkitc-1
 
           - env: ci-arduino-3-latest
             board: esp32dev
@@ -124,7 +124,25 @@ jobs:
           pip install --upgrade platformio
           pip install --upgrade cryptography
 
-      - run: PLATFORMIO_SRC_DIR=examples/TaskManager PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
-      - run: PLATFORMIO_SRC_DIR=examples/TaskManagerJson PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+      #- run: PLATFORMIO_SRC_DIR=examples/TaskManager PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+      #- run: PLATFORMIO_SRC_DIR=examples/TaskManagerJson PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
       - run: PLATFORMIO_SRC_DIR=examples/AsyncTaskManager PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
-      - run: PLATFORMIO_SRC_DIR=examples/Watchdog PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+      #- run: PLATFORMIO_SRC_DIR=examples/Watchdog PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+
+      - name: Upload firmware
+        run: pio run -e ${{ matrix.env }} --target upload
+
+      - name: Capture Serial Output
+        env:
+          SERIAL_PORT: /dev/ttyUSB0  # ggf. anpassen
+        run: |
+          timeout 30 pio device monitor \
+            --port $SERIAL_PORT \
+            --baud 115200 \
+            --raw > serial.log
+
+      - name: Upload Serial Log
+        uses: actions/upload-artifact@v3
+        with:
+          name: serial-log-${{ matrix.board }}-${{ matrix.env }}
+          path: serial.log
