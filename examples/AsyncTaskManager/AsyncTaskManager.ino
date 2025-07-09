@@ -15,9 +15,11 @@ void setup() {
   while (!Serial)
     continue;
 
+  Serial.println("Before Taskmanager");
   sayHello.setType(Mycila::Task::Type::FOREVER);
   sayHello.setInterval(1000);
   sayHello.onDone([](const Mycila::Task& me, uint32_t elapsed) {
+    Serial.println("sayHello DONE");
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.name(), elapsed);
   });
   sayHello.setEnabled(true);
@@ -26,6 +28,7 @@ void setup() {
   sayGoodbye.setType(Mycila::Task::Type::FOREVER);
   sayGoodbye.setInterval(3000);
   sayGoodbye.onDone([](const Mycila::Task& me, uint32_t elapsed) {
+    Serial.println("sayGoodbye DONE");
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.name(), elapsed);
     ping.setData(params);
     ping.resume();
@@ -35,6 +38,7 @@ void setup() {
 
   ping.setType(Mycila::Task::Type::ONCE);
   ping.onDone([](const Mycila::Task& me, uint32_t elapsed) {
+    Serial.println("ping DONE");
     ESP_LOGD("app", "Task '%s' executed in %" PRIu32 " us", me.name(), elapsed);
   });
   ping.setEnabled(true);
@@ -48,6 +52,7 @@ void setup() {
   loopTaskManager.enableProfiling(6);
 
   loopTaskManager.asyncStart();
+  Serial.println("After Taskmanager");
 }
 
 void loop() {
