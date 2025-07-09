@@ -124,25 +124,7 @@ jobs:
           pip install --upgrade platformio
           pip install --upgrade cryptography
 
-      #- run: PLATFORMIO_SRC_DIR=examples/TaskManager PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
-      #- run: PLATFORMIO_SRC_DIR=examples/TaskManagerJson PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+      - run: PLATFORMIO_SRC_DIR=examples/TaskManager PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+      - run: PLATFORMIO_SRC_DIR=examples/TaskManagerJson PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
       - run: PLATFORMIO_SRC_DIR=examples/AsyncTaskManager PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
-      #- run: PLATFORMIO_SRC_DIR=examples/Watchdog PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
-
-      - name: Upload firmware
-        run: pio run -e ${{ matrix.env }} --target upload
-
-      - name: Capture Serial Output
-        env:
-          SERIAL_PORT: /dev/ttyUSB0  # ggf. anpassen
-        run: |
-          timeout 30 pio device monitor \
-            --port $SERIAL_PORT \
-            --baud 115200 \
-            --raw > serial.log
-
-      - name: Upload Serial Log
-        uses: actions/upload-artifact@v4
-        with:
-          name: serial-log-${{ matrix.board }}-${{ matrix.env }}
-          path: serial.log
+      - run: PLATFORMIO_SRC_DIR=examples/Watchdog PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
